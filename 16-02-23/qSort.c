@@ -70,14 +70,12 @@ int main(int argc, char **argv) {
     int arr[100000];
     int size[] = {1000, 5000, 8000, 10000, 20000, 30000, 40000, 50000, 65000, 80000, 90000, 100000};
     int i = 0;
-    double x=1.0471975512;
     for (i = 0; i <= 11; i++) {
         readData(arr, argv[1]);
         begin = clock();
         qSort(arr, 0, size[i]-1);
         end = clock();
-        writeTable(size[i], (end - begin) / x, argv[2]);
-        x = x - 0.01;
+        writeTable(size[i], (end - begin) / 2000.0, argv[2]);
     }
     return 0;
 }
