@@ -1,0 +1,3 @@
+./bns avg.txt bnTableAVG.txt
+./bns best.txt bnTableBST.txt
+./bns wrst.txt bnTableWST.txt

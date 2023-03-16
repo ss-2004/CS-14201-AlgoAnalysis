@@ -1,0 +1,3 @@
+clang++ binSort.cpp -o bns
+clang cSort.c -o cs
+clang++ rSort.cpp -o rs

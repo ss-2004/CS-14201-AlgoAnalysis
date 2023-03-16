@@ -7,37 +7,33 @@
 clock_t begin;
 clock_t end;
 
-int findMax(int arr[], int n)
-{
-	int i, mx = -16777216;
-	for(i=0; i < n; i++)
-	{
-		if(arr[i] > mx)
-			mx = arr[i];
-	}
-	return mx;
+int findMax(int arr[], int n) {
+    int i, mx = -16777216;
+    for (i = 0; i < n; i++) {
+        if (arr[i] > mx)
+            mx = arr[i];
+    }
+    return mx;
 }
 
-void cSort(int arr[], int n)
-{
-	int mx = findMax(arr, n);
-	int i, j, *c;
-	c = (int*) malloc(sizeof(int) * mx + 1);
-	
-	for(i=0; i < mx+1; i++)
-		c[i]=0;
-	for(i=0; i < n; i++)
-		c[arr[i]]++;
-			
-	i=0; j=0;
-	while(j < mx + 1)
-	{
-		if(c[j] > 0){
-			arr[i++] = j;
-			c[j]--;
-		}
-		else j++;
-	}
+void cSort(int arr[], int n) {
+    int mx = findMax(arr, n);
+    int i, j, *c;
+    c = (int *) malloc(sizeof(int) * mx + 1);
+
+    for (i = 0; i < mx + 1; i++)
+        c[i] = 0;
+    for (i = 0; i < n; i++)
+        c[arr[i]]++;
+
+    i = 0;
+    j = 0;
+    while (j < mx + 1) {
+        if (c[j] > 0) {
+            arr[i++] = j;
+            c[j]--;
+        } else j++;
+    }
 }
 
 void writeTable(int size, double time, char *filename) {
@@ -71,7 +67,7 @@ void readData(int arr[], char *filename) {
 
 int main(int argc, char **argv) {
     int arr[100000];
- 	int size[] = {1000, 5000, 8000, 10000, 20000, 30000, 40000, 50000, 65000, 80000, 90000, 100000};
+    int size[] = {1000, 5000, 8000, 10000, 20000, 30000, 40000, 50000, 65000, 80000, 90000, 100000};
     int i = 0;
     for (i = 0; i <= 11; i++) {
         readData(arr, argv[1]);
@@ -79,9 +75,6 @@ int main(int argc, char **argv) {
         cSort(arr, size[i]);
         end = clock();
         writeTable(size[i], (end - begin), argv[2]);
-        //for(i = 0; i<size[i]; i++)
-        //	printf("%d\n", arr[i]);
-        //printf("\n");
     }
     return 0;
 }

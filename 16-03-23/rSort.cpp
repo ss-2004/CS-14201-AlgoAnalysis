@@ -1,40 +1,110 @@
-// Analysis of QuickSort over 100K entries
+// Analysis of RadixSort over 100K entries
 
-#include <stdio.h>
+#include <iostream>
 #include <stdlib.h>
-#include <time.h>
+#include <stdio.h>
+#include <math.h>
+#include <ctime>
 
-clock_t begin;
-clock_t end;
+using namespace std;
 
-void swp(int *x, int *y) {
-    int t = *x;
-    *x = *y;
-    *y = t;
+clock_t st;
+clock_t en;
+
+template<class T>
+void Print(T &vec, int n, string s) {
+    cout << s << ": [" << flush;
+    for (int i = 0; i < n; i++) {
+        cout << vec[i] << flush;
+        if (i < n - 1) {
+            cout << ", " << flush;
+        }
+    }
+    cout << "]" << endl;
 }
 
-int divArr(int arr[], int low, int high)
-{
-	int pivot = arr[high];
-	int i = (low - 1), j;
-
-	for (j = low; j <= high - 1; j++) {
-		if (arr[j] < pivot) {
-			i++;
-			swp(&arr[i], &arr[j]);
-		}
-	}
-	swp(&arr[i + 1], &arr[high]);
-	return (i + 1);
+int Max(int A[], int n) {
+    int max = -32768;
+    for (int i = 0; i < n; i++) {
+        if (A[i] > max) {
+            max = A[i];
+        }
+    }
+    return max;
 }
 
-void qSort(int arr[], int low, int high)
-{
-	if (low < high) {
-		int pi = divArr(arr, low, high);
-		qSort(arr, low, pi - 1);
-		qSort(arr, pi + 1, high);
-	}
+class Node {
+public:
+    int value;
+    Node *next;
+};
+
+int countDigits(int x) {
+    int count = 0;
+    while (x != 0) {
+        x = x / 10;
+        count++;
+    }
+    return count;
+}
+
+void initializeBins(Node **p, int n) {
+    for (int i = 0; i < n; i++) {
+        p[i] = nullptr;
+    }
+}
+
+void Insert(Node **ptrBins, int value, int idx) {
+    Node *temp = new Node;
+    temp->value = value;
+    temp->next = nullptr;
+
+    if (ptrBins[idx] == nullptr) {
+        ptrBins[idx] = temp;
+    } else {
+        Node *p = ptrBins[idx];
+        while (p->next != nullptr) {
+            p = p->next;
+        }
+        p->next = temp;
+    }
+}
+
+int Delete(Node **ptrBins, int idx) {
+    Node *p = ptrBins[idx];
+    ptrBins[idx] = ptrBins[idx]->next;
+    int x = p->value;
+    delete p;
+    return x;
+}
+
+int getBinIndex(int x, int idx) {
+    return (int) (x / pow(10, idx)) % 10;
+}
+
+void rSort(int A[], int n) {
+    int max = Max(A, n);
+    int nPass = countDigits(max);
+    Node **bins = new Node *[10];
+    initializeBins(bins, 10);
+
+    for (int pass = 0; pass < nPass; pass++) {
+        for (int i = 0; i < n; i++) {
+            int binIdx = getBinIndex(A[i], pass);
+            Insert(bins, A[i], binIdx);
+        }
+
+        int i = 0;
+        int j = 0;
+        while (i < 10) {
+            while (bins[i] != nullptr) {
+                A[j++] = Delete(bins, i);
+            }
+            i++;
+        }
+        initializeBins(bins, 10);
+    }
+    delete[] bins;
 }
 
 void writeTable(int size, double time, char *filename) {
@@ -72,10 +142,10 @@ int main(int argc, char **argv) {
     int i = 0;
     for (i = 0; i <= 11; i++) {
         readData(arr, argv[1]);
-        begin = clock();
-        qSort(arr, 0, size[i]-1);
-        end = clock();
-        writeTable(size[i], (end - begin) / 2000, argv[2]);
+        st = clock();
+        rSort(arr, size[i]);
+        en = clock();
+        writeTable(size[i], (en - st) / 2000, argv[2]);
     }
     return 0;
 }
